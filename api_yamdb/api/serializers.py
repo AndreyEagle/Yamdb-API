@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from reviews.models import User
+from reviews.models import User, Comments, Review
+from rest_framework.relations import SlugRelatedField
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -92,3 +93,27 @@ class TokenSerializer(serializers.ModelSerializer):
         if data['confirmation_code'] != confirmation_code:
             raise serializers.ValidationError('Неверный confirmation_code')
         return data
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = SlugRelatedField(
+        read_only=True, slug_field='username'
+    )
+
+    class Meta:
+        fields = '__all__'
+        read_only_fields = ('author', 'title',)
+        model = Review
+
+
+class CommentsSerializer(serializers.ModelSerializer):
+    author = SlugRelatedField(
+        read_only=True, slug_field='username'
+    )
+    review = SlugRelatedField(
+        read_only=True, slug_field='id'
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Comments
