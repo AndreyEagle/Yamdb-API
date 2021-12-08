@@ -1,4 +1,4 @@
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Comments, Review
 from rest_framework import serializers
 from django.utils import timezone
 from django.db.models import Avg
@@ -55,3 +55,27 @@ class TitleSerializer(serializers.ModelSerializer):
         if not rating:
             return rating
         return round(rating, 1)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field='username'
+    )
+
+    class Meta:
+        fields = '__all__'
+        read_only_fields = ('author', 'title',)
+        model = Review
+
+
+class CommentsSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field='username'
+    )
+    review = SlugRelatedField(
+        read_only=True, slug_field='id'
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Comments
