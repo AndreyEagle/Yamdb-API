@@ -10,9 +10,9 @@ app_name = 'api'
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
-router.register('titles', TitleViewSet, basename='titles')
-router.register('categories', CategoryViewSet, basename='categories')
-router.register('genres', GenreViewSet, basename='genres')
+router.register(r'titles', TitleViewSet, basename='titles')
+router.register(r'categories', CategoryViewSet, basename='categories')
+router.register(r'genres', GenreViewSet, basename='genres')
 router.register(
     r'titles/(?P<title_id>\d+)/reviews',
     ReviewViewSet,
@@ -21,7 +21,6 @@ router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentsViewSet,
     basename='comments')
-
 
 urlpatterns = [
     path('v1/', include(router.urls)),
