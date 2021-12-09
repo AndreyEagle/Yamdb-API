@@ -20,7 +20,11 @@ class AuthorOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         return (
             request.method in SAFE_METHODS
-            or obj.author == request.user)
+
+            or (obj.author == request.user
+                or request.user.role == 'moderator'
+                or request.user.role == 'admin')
+        )
 
 class ReadOnly(BasePermission):
 

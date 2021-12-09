@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 from reviews.models import User, Category, Genre, Title, Comments, Review
 from rest_framework import serializers
 from django.utils import timezone
@@ -142,9 +142,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = (
-            'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
-        )
+        fields = '__all__'
 
     def get_rating(self, obj):
         rating = obj.reviews.aggregate(Avg('score')).get('score__avg')
@@ -152,24 +150,36 @@ class TitleSerializer(serializers.ModelSerializer):
             return rating
         return round(rating, 1)
 
-
+    
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
+    title = serializers.SlugRelatedField(
+        slug_field='id',
+        queryset=Title.objects.all(),
+        required=False
+    )
 
     class Meta:
         fields = '__all__'
-        read_only_fields = ('author', 'title',)
         model = Review
+
+    def validate(self, data):
+        if self.context['request'].method == 'POST':
+            user = self.context['request'].user
+            title_id = self.context['view'].kwargs.get('title_id')
+            if Review.objects.filter(author=user.id, title=title_id).exists():
+                raise serializers.ValidationError('Два отзыва нельзя')
+        return data
 
 
 class CommentsSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
-    review = serializers.SlugRelatedField(
-        read_only=True, slug_field='id'
+    review = serializers.PrimaryKeyRelatedField(
+        read_only=True
     )
 
     class Meta:
