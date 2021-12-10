@@ -26,6 +26,7 @@ class AuthorOrReadOnly(BasePermission):
                 or request.user.is_admin)
         )
 
+
 class ReadOnly(BasePermission):
 
     def has_permission(self, request, view):

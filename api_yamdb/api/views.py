@@ -133,7 +133,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     permission_classes = (IsAdmin | ReadOnly,)
     filterset_class = TitleFilter
-    
+
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH',):
             return TitleCreateSerializer
@@ -143,7 +143,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (AuthorOrReadOnly,)
-    
+
     def get_queryset(self):
         title_id = self.kwargs.get("title_id")
         title = get_object_or_404(Title, id=title_id)

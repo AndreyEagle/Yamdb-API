@@ -152,7 +152,6 @@ class Review(models.Model):
         return f'{self.text}'
 
 
-
 class Comments(models.Model):
     text = models.TextField()
     author = models.ForeignKey(
