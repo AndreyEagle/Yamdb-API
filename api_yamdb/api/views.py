@@ -9,8 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Comments, Genre, Review, Title, User
-
-from .permissions import AuthorOrReadOnly, IsAdmin
+from .filters import TitleFilter
+from .permissions import AuthorOrReadOnly, IsAdmin, ReadOnly
 from .serializers import (CategorySerializer, CommentsSerializer,
                           GenreSerializer, ReviewSerializer, SignUpSerializer,
                           TitleCreateSerializer, TitleSerializer,
@@ -95,7 +95,13 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    permission_classes = (IsAdmin | ReadOnly,)
 
+    @action(
+        detail=False, methods=['delete'],
+        url_path=r'(?P<slug>\w+)',
+        lookup_field='slug', url_name='category_slug'
+    )
     def get_category(self, request, slug):
         category = self.get_object()
         serializer = CategorySerializer(category)
@@ -108,7 +114,13 @@ class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    permission_classes = (IsAdmin | ReadOnly,)
 
+    @action(
+        detail=False, methods=['delete'],
+        url_path=r'(?P<slug>\w+)',
+        lookup_field='slug', url_name='category_slug'
+    )
     def get_genre(self, request, slug):
         category = self.get_object()
         serializer = CategorySerializer(category)
@@ -119,7 +131,9 @@ class GenreViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-
+    permission_classes = (IsAdmin | ReadOnly,)
+    filterset_class = TitleFilter
+    
     def get_serializer_class(self):
         if self.request.method in ('POST', 'PATCH',):
             return TitleCreateSerializer
