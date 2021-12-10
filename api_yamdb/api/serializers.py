@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
 from reviews.models import User, Category, Genre, Title, Comments, Review
 from rest_framework import serializers
 from django.utils import timezone
@@ -150,7 +150,7 @@ class TitleSerializer(serializers.ModelSerializer):
             return rating
         return round(rating, 1)
 
-
+    
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
@@ -162,7 +162,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = '__all__'
+        fields = ('text', 'score', 'author', 'title', 'pub_date')
         model = Review
 
     def validate(self, data):
@@ -183,5 +183,5 @@ class CommentsSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = '__all__'
+        fields = ('text', 'author', 'review', 'pub_date')
         model = Comments
