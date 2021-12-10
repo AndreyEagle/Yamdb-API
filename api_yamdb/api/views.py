@@ -1,5 +1,6 @@
-import random
+import uuid
 
+from django.conf import settings
 from django.core.mail import EmailMessage
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, generics, status, viewsets
@@ -9,12 +10,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Comments, Genre, Review, Title, User
-from .filters import TitleFilter
-from .permissions import AuthorOrReadOnly, IsAdmin, ReadOnly
-from .serializers import (CategorySerializer, CommentsSerializer,
-                          GenreSerializer, ReviewSerializer, SignUpSerializer,
-                          TitleCreateSerializer, TitleSerializer,
-                          TokenSerializer, UserMeSerializer, UserSerializer)
+
+from api.filters import TitleFilter
+from api.permissions import AuthorOrReadOnly, IsAdmin, ReadOnly
+from api.serializers import (CategorySerializer, CommentsSerializer,
+                             GenreSerializer, ReviewSerializer,
+                             SignUpSerializer, TitleCreateSerializer,
+                             TitleSerializer, TokenSerializer,
+                             UserMeSerializer, UserSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -43,7 +46,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class SignUpViewSet(generics.CreateAPIView):
     serializer_class = SignUpSerializer
-    confirmation_code = str(random.randint(10000, 99999))
+    confirmation_code = str(uuid.uuid4())
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -60,7 +63,7 @@ class SignUpViewSet(generics.CreateAPIView):
         EmailMessage(
             'Confirmation_code',
             f'Ваш confirmation_code {self.confirmation_code}',
-            'Yamdb@yamdb.com',
+            settings.EMAIL_SERVER,
             (serializer.validated_data['email'],)
         ).send()
         serializer.save(

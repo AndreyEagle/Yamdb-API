@@ -1,10 +1,10 @@
+from django.conf import settings
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from reviews.models import User, Category, Genre, Title, Comments, Review
-from rest_framework import serializers
-from django.utils import timezone
-from django.db.models import Avg
+from reviews.models import Category, Comments, Genre, Review, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -73,8 +73,7 @@ class SignUpSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data['username'] == 'me':
-            raise serializers.ValidationError(
-                'Использовать это имя в качестве username запрещено.')
+            raise serializers.ValidationError(settings.USERNAME_FORBIDDEN)
         return data
 
 
@@ -93,7 +92,9 @@ class TokenSerializer(serializers.ModelSerializer):
         user = get_object_or_404(User, username=data['username'])
         confirmation_code = user.confirmation_code
         if data['confirmation_code'] != confirmation_code:
-            raise serializers.ValidationError('Неверный confirmation_code')
+            raise serializers.ValidationError(
+                settings.INVALID_CONFORMATION_CODE
+            )
         return data
 
 
@@ -128,10 +129,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
     def validate_year(self, value):
         current_year = timezone.now().year
         if not 0 <= value <= current_year:
-            raise serializers.ValidationError(
-                'Год создания произведения не может быть '
-                'отрицательным или из будущего'
-            )
+            raise serializers.ValidationError(settings.INVALID_YEAR)
         return value
 
 
@@ -170,7 +168,9 @@ class ReviewSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             title_id = self.context['view'].kwargs.get('title_id')
             if Review.objects.filter(author=user.id, title=title_id).exists():
-                raise serializers.ValidationError('Два отзыва нельзя')
+                raise serializers.ValidationError(
+                    settings.ONE_REVIEW_FROM_USER
+                )
         return data
 
 

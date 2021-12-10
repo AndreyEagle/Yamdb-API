@@ -13,24 +13,25 @@ class User(AbstractUser):
         (ADMIN, 'admin'),
     )
     password = models.CharField(
-        max_length=128,
         verbose_name='password',
+        max_length=128,
         blank=True,
         null=True
     )
     email = models.EmailField(
+        verbose_name='email address',
         unique=True,
         blank=True,
         max_length=254,
-        verbose_name='email address'
     )
     confirmation_code = models.CharField(
+        verbose_name='confirmation code',
         max_length=16,
         blank=True,
         null=True
     )
     role = models.CharField(
-        'Пользовательские роли',
+        verbose_name='users role',
         max_length=16,
         choices=USERS_ROLE,
         default=USER,
@@ -38,11 +39,12 @@ class User(AbstractUser):
         null=True
     )
     bio = models.TextField(
-        'Биография',
+        verbose_name='biography',
         blank=True,
         null=True
     )
     first_name = models.CharField(
+        verbose_name='first name',
         max_length=150,
         blank=True,
         null=True
@@ -61,6 +63,21 @@ class User(AbstractUser):
                 name='unique_user'
             ),
         )
+
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+
+    def __str__(self):
+        return self.username
+
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
+
+    @property
+    def is_moderator(self):
+        return self.role == 'moderator'
 
 
 class Category(models.Model):
