@@ -146,9 +146,9 @@ class GenreTitle(models.Model):
 
 class Review(models.Model):
     text = models.TextField()
-    score = models.IntegerField(validators=[
+    score = models.PositiveSmallIntegerField(validators=(
         MaxValueValidator(10),
-        MinValueValidator(0), ])
+        MinValueValidator(0), ))
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews')
     title = models.ForeignKey(
@@ -162,6 +162,11 @@ class Review(models.Model):
                 fields=('author', 'title'),
                 name='unique_review'),
         )
+        verbose_name = 'Review'
+        verbose_name_plural = 'Reviews'
+
+    def __str__(self):
+        return f'{self.text}'
 
 
 class Comments(models.Model):
@@ -172,3 +177,10 @@ class Comments(models.Model):
         Review, on_delete=models.CASCADE, related_name='comments')
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True, null=True)
+
+    class Meta:
+        verbose_name = 'Comment'
+        verbose_name_plural = 'Comments'
+
+    def __str__(self):
+        return f'{self.text}'
