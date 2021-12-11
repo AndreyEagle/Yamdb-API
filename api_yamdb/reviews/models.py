@@ -79,43 +79,43 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Название')
+    name = models.CharField(max_length=255, verbose_name='category name', db_index=True)
     slug = models.SlugField(unique=True)
 
     class Meta:
-        verbose_name = 'Категория'
-        verbose_name_plural = 'Категории'
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
 
     def __str__(self):
-        return f'{self.name} {self.name}'
+        return self.name
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Название')
+    name = models.CharField(max_length=255, verbose_name='genre name', db_index=True)
     slug = models.SlugField(unique=True)
 
     class Meta:
-        verbose_name = 'Жанр'
-        verbose_name_plural = 'Жанры'
+        verbose_name = 'Genre'
+        verbose_name_plural = 'Genres'
 
     def __str__(self):
-        return f'{self.name} {self.name}'
+        return self.name
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=200, verbose_name='Название')
+    name = models.CharField(max_length=200, verbose_name='title')
 
-    year = models.IntegerField(verbose_name='Год создания')
+    year = models.IntegerField(verbose_name='creation year')
 
     description = models.CharField(
-        max_length=255, null=True, blank=True, verbose_name='Описание'
+        max_length=255, null=True, blank=True, verbose_name='description'
     )
 
     genre = models.ManyToManyField(
         'Genre',
         through='GenreTitle',
         related_name='genre',
-        verbose_name='Жанр'
+        verbose_name='genre'
     )
     category = models.ForeignKey(
         'Category',
@@ -123,12 +123,12 @@ class Title(models.Model):
         null=True,
         blank=True,
         related_name='category',
-        verbose_name='Категория'
+        verbose_name='category'
     )
 
     class Meta:
-        verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'
+        verbose_name = 'Title'
+        verbose_name_plural = 'Titles'
 
     def __str__(self):
         return self.name
@@ -164,7 +164,7 @@ class Review(models.Model):
         verbose_name_plural = 'Reviews'
 
     def __str__(self):
-        return f'{self.text}'
+        return self.text
 
 
 class Comments(models.Model):
@@ -181,4 +181,4 @@ class Comments(models.Model):
         verbose_name_plural = 'Comments'
 
     def __str__(self):
-        return f'{self.text}'
+        return self.text
