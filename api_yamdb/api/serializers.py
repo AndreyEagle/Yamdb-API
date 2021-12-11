@@ -131,6 +131,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(settings.INVALID_YEAR)
         return value
 
+
 def check_year(value):
     current_year = timezone.now().year
     if not 0 <= value <= current_year:

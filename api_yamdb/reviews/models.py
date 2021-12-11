@@ -79,7 +79,11 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, verbose_name='category name', db_index=True)
+    name = models.CharField(
+        max_length=255,
+        verbose_name='category name',
+        db_index=True
+    )
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -91,7 +95,11 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=255, verbose_name='genre name', db_index=True)
+    name = models.CharField(
+        max_length=255,
+        verbose_name='genre name',
+        db_index=True
+    )
     slug = models.SlugField(unique=True)
 
     class Meta:
