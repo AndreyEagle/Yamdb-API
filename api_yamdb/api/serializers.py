@@ -1,10 +1,17 @@
-from django.conf import settings
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from reviews.models import Category, Comments, Genre, Review, Title, User
+
+USERNAME_FORBIDDEN = 'Использовать это имя в качестве username запрещено.'
+INVALID_CONFORMATION_CODE = 'Неверный confirmation_code'
+ONE_REVIEW_FROM_USER = 'Два отзыва нельзя'
+INVALID_YEAR = (
+    'Год создания произведения не может быть '
+    'отрицательным или из будущего'
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -73,7 +80,7 @@ class SignUpSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data['username'] == 'me':
-            raise serializers.ValidationError(settings.USERNAME_FORBIDDEN)
+            raise serializers.ValidationError(USERNAME_FORBIDDEN)
         return data
 
 
@@ -92,9 +99,7 @@ class TokenSerializer(serializers.ModelSerializer):
         user = get_object_or_404(User, username=data['username'])
         confirmation_code = user.confirmation_code
         if data['confirmation_code'] != confirmation_code:
-            raise serializers.ValidationError(
-                settings.INVALID_CONFORMATION_CODE
-            )
+            raise serializers.ValidationError(INVALID_CONFORMATION_CODE)
         return data
 
 
@@ -128,7 +133,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
 
     def validate_year(self, value):
         if check_year(value):
-            raise serializers.ValidationError(settings.INVALID_YEAR)
+            raise serializers.ValidationError(INVALID_YEAR)
         return value
 
 
@@ -174,9 +179,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             title_id = self.context['view'].kwargs.get('title_id')
             if Review.objects.filter(author=user.id, title=title_id).exists():
-                raise serializers.ValidationError(
-                    settings.ONE_REVIEW_FROM_USER
-                )
+                raise serializers.ValidationError(ONE_REVIEW_FROM_USER)
         return data
 
 

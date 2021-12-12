@@ -139,11 +139,3 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 EMAIL_SERVER = 'Yamdb@yamdb.com'
-
-
-# Validation errors
-
-USERNAME_FORBIDDEN = 'Использовать это имя в качестве username запрещено.'
-INVALID_CONFORMATION_CODE = 'Неверный confirmation_code'
-INVALID_YEAR = 'Год создания произведения не может быть отрицательным или из будущего'
-ONE_REVIEW_FROM_USER = 'Два отзыва нельзя'
